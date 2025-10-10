@@ -8,12 +8,12 @@ import com.diconium.mobile.tools.kebabkrafter.models.SpecField
 import com.diconium.mobile.tools.kebabkrafter.models.SpecModel
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
-import kotlinx.datetime.Instant
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonClassDiscriminator
 import java.io.File
+import kotlin.time.ExperimentalTime
 
 class DataClassesGenerator(
     private val basePackageName: String,
@@ -51,9 +51,13 @@ class DataClassesGenerator(
         get() = ClassName(getFullPackageName(basePackageName), name)
 
     private var addJsonDiscriminator: String? = null
+    private var optInExperimentalTime = false
 
     private fun generateTypeSpecBuilder(dataClass: SpecModel): TypeSpec.Builder =
         TypeSpec.classBuilder(dataClass.asClassName).apply {
+
+            optInExperimentalTime = false
+
             dataClass.description?.let(::addKdoc)
 
             // Modifiers
@@ -116,6 +120,10 @@ class DataClassesGenerator(
 
             // Annotation
             addAnnotation(Serializable::class)
+            if (optInExperimentalTime) {
+                val annotation = AnnotationSpec.builder(optIn).addMember("%T::class", experimentalTime)
+                addAnnotation(annotation.build())
+            }
             serialName?.let {
                 val annotation = AnnotationSpec.builder(SerialName::class).addMember("\"$it\"")
                 addAnnotation(annotation.build())
@@ -162,8 +170,20 @@ class DataClassesGenerator(
             addModifiers(KModifier.SEALED)
             addAnnotation(Serializable::class)
             addJsonDiscriminator?.let {
-                val annotation = AnnotationSpec.builder(jsonDiscriminator).addMember("\"$it\"")
-                addAnnotation(annotation.build())
+
+                addAnnotation(
+                    AnnotationSpec
+                        .builder(jsonDiscriminator)
+                        .addMember("\"$it\"")
+                        .build(),
+                )
+
+                addAnnotation(
+                    AnnotationSpec
+                        .builder(optIn)
+                        .addMember("%T::class", experimentalSerializationApi)
+                        .build(),
+                )
             }
             addTypes(childTypes)
         }.build()
@@ -180,7 +200,11 @@ class DataClassesGenerator(
         SpecField.Type.Float -> Float::class.asTypeName()
         SpecField.Type.Int -> Int::class.asTypeName()
         SpecField.Type.String -> String::class.asTypeName()
-        SpecField.Type.Date -> Instant::class.asTypeName()
+        SpecField.Type.Date -> {
+            optInExperimentalTime = true
+            kotlinTimeInstant
+        }
+
         is SpecField.Type.DataArray -> List::class.asTypeName().parameterizedBy(type.toTypeName(enumLookup))
         is SpecField.Type.DataModel -> dataSpecsMap[id]!!.getClassName(basePackageName)
         is SpecField.Type.SealedSerializationDiscriminator -> jsonDiscriminator
@@ -190,6 +214,16 @@ class DataClassesGenerator(
 
 @OptIn(ExperimentalSerializationApi::class)
 private val jsonDiscriminator = JsonClassDiscriminator::class.asTypeName()
+private val experimentalTime = ExperimentalTime::class.asTypeName()
+private val experimentalSerializationApi = ExperimentalSerializationApi::class.asTypeName()
+
+// kotlin.time.Instant::class.asTypeName()
+// directly reference fails with: "Unable to load class 'kotlin.time.Instant'."
+private val kotlinTimeInstant = ClassName.bestGuess("kotlin.time.Instant")
+
+// OptIn::class.asTypeName()
+// directly reference fails with: "This class can only be used as an annotation."
+private val optIn = ClassName.bestGuess("kotlin.OptIn")
 
 private const val AUTO_GENERATOR_WARNING = """
 

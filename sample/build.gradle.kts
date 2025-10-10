@@ -52,6 +52,7 @@ kotlin {
     jvmToolchain(21)
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_21)
+        optIn.add("kotlin.time.ExperimentalTime")
     }
 }
 
