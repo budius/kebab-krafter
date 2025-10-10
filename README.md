@@ -108,9 +108,28 @@ class KoinServiceLocator(private val koin: Koin) : ServiceLocator {
 
 Check the `sample/` app with the "Pet Store" for a full example.
 
+
+## Plugin Development notes
+
+### Setup
+
+The most practical way is to open on IntelliJ the sample app. The `sample/settings.gradle` points to the source code of the plugin and applies it to the project.
+
+After gradle import/index the source code from the plugin will be linked and display on the IDE and it's trivial to do the changes on the plugin and see the effects on the sample. 
+
+### Disable task caching/auto execution
+
+It might become necessary during the plugin development to disable the task caching and auto-execution.
+
+For that:
+- In `KtorServerExtension.kt` comment out `OutputDirectory` and `Optional` from `outputFolder` and add `@get:Console`
+- In `ApplyGenerateKtorServer.kt` and replace in both `sourceSet.<type>.srcDirs(task)` to `sourceSet.<type>.srcDirs(target.defaultOutput)`.
+
+This way you can control when the code is generated, but it will still be linked to the `sourceSet`
+
 ## Authors <a name = "authors"></a>
 
 - [@rvp-diconium](https://github.com/rvp-diconium)
 
-See also the list of [contributors](https://github.com/diconium/mcc-network-generator/contributors) who participated in
+See also the list of [contributors](https://github.com/diconium/kebab-krafter/contributors) who participated in
 this project.
