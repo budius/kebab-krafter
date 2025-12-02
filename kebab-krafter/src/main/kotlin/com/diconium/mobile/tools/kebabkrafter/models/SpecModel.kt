@@ -42,6 +42,7 @@ data class SpecField(val name: String, val type: Type, val isRequired: Boolean, 
         data object Int : Type
         data object Boolean : Type
         data object Float : Type
+        data object Double : Type
         data object Date : Type
         data class SealedSerializationDiscriminator(val value: kotlin.String) : Type
         data class DataModel(val id: kotlin.String) : Type

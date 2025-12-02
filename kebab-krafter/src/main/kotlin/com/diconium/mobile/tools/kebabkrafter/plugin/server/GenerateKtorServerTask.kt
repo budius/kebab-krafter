@@ -26,7 +26,6 @@ abstract class GenerateKtorServerTask : DefaultTask() {
 
     private fun generateKtorServerFor() {
         with(ktorServerInput.get()) {
-
             generateKtorServerFor(
                 packageName = packageName.get(),
                 baseDir = outputFolder.get().asFile,
@@ -40,7 +39,6 @@ abstract class GenerateKtorServerTask : DefaultTask() {
                 },
 
                 transformers = with(ktorServerInput.get().transformerSpec) {
-
                     // implementation notes:
                     //
                     // That's a very cheeky piece of code that I'm still unsure if genius or stupid.

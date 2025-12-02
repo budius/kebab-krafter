@@ -16,7 +16,6 @@ import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 
 fun applyGenerateKtorServer(target: Project) {
-
     // create extension
     val ktorServerInput = target.extensions.create("ktorServer", KtorServerExtension::class.java)
 
@@ -55,7 +54,6 @@ private val SourceSetContainer.main: NamedDomainObjectProvider<SourceSet>
 private val SourceSet.kotlin: SourceDirectorySet
     get() = (this as ExtensionAware).extensions.getByName("kotlin")
         as SourceDirectorySet
-
 
 private class DefaultEndpointTransformer : EndpointTransformer {
     override fun transform(endpoint: Endpoint) = endpoint

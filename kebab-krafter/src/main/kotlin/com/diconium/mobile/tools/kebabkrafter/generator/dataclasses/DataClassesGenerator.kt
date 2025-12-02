@@ -55,7 +55,6 @@ class DataClassesGenerator(
 
     private fun generateTypeSpecBuilder(dataClass: SpecModel): TypeSpec.Builder =
         TypeSpec.classBuilder(dataClass.asClassName).apply {
-
             optInExperimentalTime = false
 
             dataClass.description?.let(::addKdoc)
@@ -170,7 +169,6 @@ class DataClassesGenerator(
             addModifiers(KModifier.SEALED)
             addAnnotation(Serializable::class)
             addJsonDiscriminator?.let {
-
                 addAnnotation(
                     AnnotationSpec
                         .builder(jsonDiscriminator)
@@ -196,11 +194,12 @@ class DataClassesGenerator(
     }
 
     private fun SpecField.Type.toTypeName(enumLookup: Map<SpecField.Type.Enum, TypeName>): TypeName = when (this) {
-        SpecField.Type.Boolean -> Boolean::class.asTypeName()
-        SpecField.Type.Float -> Float::class.asTypeName()
-        SpecField.Type.Int -> Int::class.asTypeName()
-        SpecField.Type.String -> String::class.asTypeName()
-        SpecField.Type.Date -> {
+        is SpecField.Type.Boolean -> Boolean::class.asTypeName()
+        is SpecField.Type.Float -> Float::class.asTypeName()
+        is SpecField.Type.Double -> Double::class.asTypeName()
+        is SpecField.Type.Int -> Int::class.asTypeName()
+        is SpecField.Type.String -> String::class.asTypeName()
+        is SpecField.Type.Date -> {
             optInExperimentalTime = true
             kotlinTimeInstant
         }
