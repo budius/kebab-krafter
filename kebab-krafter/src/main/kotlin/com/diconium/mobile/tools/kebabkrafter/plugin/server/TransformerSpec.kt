@@ -34,7 +34,6 @@ interface TransformerSpec {
     @get:Input
     val ktorMapper: Property<Class<out KtorMapper>>
 
-
     fun ktorMapper(block: KtorMapper) {
         ktorMapper.set(block::class.java)
     }

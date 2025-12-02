@@ -372,7 +372,11 @@ private fun JsonSchema.Item.asType(): SpecField.Type? = when (type) {
 
     "boolean" -> SpecField.Type.Boolean
     "integer" -> SpecField.Type.Int
-    "number" -> SpecField.Type.Float
+    "number" -> when {
+        format == "double" -> SpecField.Type.Double
+        else -> SpecField.Type.Float
+    }
+
     else -> null
 }
 

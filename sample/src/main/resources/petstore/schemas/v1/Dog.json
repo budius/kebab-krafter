@@ -53,6 +53,10 @@
       "type": "string",
       "format": "date-time",
       "example": "2020-07-02T14:23:04.000Z"
+    },
+    "location" : {
+      "description": "Where is the dog",
+      "$ref": "./Location.json"
     }
   }
 }

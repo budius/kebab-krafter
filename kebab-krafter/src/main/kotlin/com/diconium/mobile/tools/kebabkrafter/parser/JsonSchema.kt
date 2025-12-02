@@ -21,7 +21,7 @@ data class JsonSchema(
 
         val description: String?,
 
-        /** format is used to classic the `number` type */
+        /** format is used to classify the `type` */
         val format: String?,
         @SerialName("\$ref")
         val ref: String?,
