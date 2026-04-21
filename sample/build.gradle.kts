@@ -178,5 +178,15 @@ ktorServer {
             factoryName = "from"
         }
     }
+    create("security") {
+        packageName = "com.diconium.mobile.tools.kebabkrafter.sample.gen.case.security"
+        specFile = File(rootDir, "testCases/security/swagger.yml")
+        schemasFolder = File(rootDir, "testCases/security/models/")
+        contextSpec {
+            packageName = "com.diconium.mobile.tools.kebabkrafter.sample.cases.security"
+            className = "SecureCallScope"
+            factoryName = "from"
+        }
+    }
     //endregion
 }

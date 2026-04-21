@@ -4,6 +4,8 @@ import com.diconium.mobile.tools.kebabkrafter.sample.cases.installGetEdgeCaseMap
 import com.diconium.mobile.tools.kebabkrafter.sample.cases.installPostEdgeCaseAcronym
 import com.diconium.mobile.tools.kebabkrafter.sample.cases.installPostEdgeCaseDescription
 import com.diconium.mobile.tools.kebabkrafter.sample.cases.installPostEdgeCaseInlined
+import com.diconium.mobile.tools.kebabkrafter.sample.cases.security.configureSecurity
+import com.diconium.mobile.tools.kebabkrafter.sample.cases.security.installSecurityGeneratedRoutes
 import com.diconium.mobile.tools.kebabkrafter.sample.gen.petstore.installPetStoreGeneratedRoutes
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -26,6 +28,7 @@ fun Application.module() {
     install(ContentNegotiation) {
         json(jsonSerialization)
     }
+    configureSecurity()
     routing {
         // the real implementation of the sample backend
         route("/api") {
@@ -42,6 +45,7 @@ fun Application.module() {
             installPostEdgeCaseAcronym()
             installPostEdgeCaseInlined()
             installPostEdgeCaseDescription()
+            installSecurityGeneratedRoutes()
         }
 
         // ktor can also be serving its own swagger API

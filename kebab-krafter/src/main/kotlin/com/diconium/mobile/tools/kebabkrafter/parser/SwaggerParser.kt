@@ -10,6 +10,7 @@ import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.Operation
 import io.swagger.v3.oas.models.PathItem
 import io.swagger.v3.oas.models.parameters.Parameter
+import io.swagger.v3.oas.models.security.SecurityRequirement
 import io.swagger.v3.parser.core.models.ParseOptions
 import io.swagger.v3.parser.core.models.SwaggerParseResult
 import java.io.File
@@ -43,6 +44,11 @@ internal class SwaggerParser(private val log: KebabLogger) {
             pathParameters?.let(::addAll)
         }
 
+        val authentication = operation.security
+            ?.flatMap { req: SecurityRequirement? -> req?.keys ?: emptyList() }
+            ?.filterNotNull()
+            ?: emptyList()
+
         return Endpoint(
             path = key.split("/").filter { it.isNotBlank() },
             method = method,
@@ -54,6 +60,7 @@ internal class SwaggerParser(private val log: KebabLogger) {
             bodyId = operation.requestBody?.content?.get("application/json")?.schema?.`$ref`
                 ?.takeIf { it.endsWith(".json") },
             errorResponseIds = parseFailureResponses(operation),
+            authentication = authentication,
         )
     }
 
