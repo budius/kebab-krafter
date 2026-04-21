@@ -49,14 +49,33 @@ object SwaggerParser {
             tags = operation.tags ?: emptyList(),
             queryParameters = parameters.filter { it.`in` == "query" }.associate(::paramMapper),
             pathParameters = parameters.filter { it.`in` == "path" }.associate(::paramMapper),
-            response = parseEndpointResponse(operation),
+            response = parseSuccessResponse(operation),
             description = operation.summary,
             bodyId = operation.requestBody?.content?.get("application/json")?.schema?.`$ref`
                 ?.takeIf { it.endsWith(".json") },
+            errorResponseIds = parseFailureResponses(operation),
         )
     }
 
-    private fun parseEndpointResponse(operation: Operation): Response {
+    private fun parseFailureResponses(operation: Operation): Map<HttpStatusCode, String> {
+        return operation
+            .responses
+            .entries
+            .mapNotNull { (key, value) ->
+                val httpStatus = fromValue(key.toInt())
+                val isFailure = httpStatus.value in (400 until 600)
+                val responseId = value.content?.get("application/json")?.schema?.`$ref`?.takeIf { it.endsWith(".json") }
+                if (responseId != null && isFailure) {
+                    httpStatus to responseId
+                } else {
+                    null
+                }
+            }
+            // associate
+            .associate { it }
+    }
+
+    private fun parseSuccessResponse(operation: Operation): Response {
         val successCount = operation.responses.entries.count { fromValue(it.key.toInt()).isSuccess() }
         if (successCount != 1) throw IllegalArgumentException("We only support one success type")
         val entry = operation.responses.entries.firstOrNull { fromValue(it.key.toInt()).isSuccess() }
@@ -73,7 +92,7 @@ object SwaggerParser {
                 id = null,
                 status = fromValue(responseStatus),
                 type = ResponseType.Binary,
-                contentTypeHeader = content?.toList()?.first()?.first!!,
+                contentTypeHeader = content.toList().first().first,
                 headers = headers,
             )
         } else {
@@ -142,6 +161,7 @@ object SwaggerParser {
         val queue = mutableListOf<String>().apply {
             addAll(endpoints.mapNotNull { it.response.id?.normalize() })
             addAll(endpoints.mapNotNull { it.bodyId?.normalize() })
+            addAll(endpoints.flatMap { it.errorResponseIds.map { error -> error.value.normalize() } })
         }
 
         val processedFiles = mutableSetOf<String>()

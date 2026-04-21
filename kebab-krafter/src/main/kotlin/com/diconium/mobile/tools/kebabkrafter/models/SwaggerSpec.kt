@@ -16,6 +16,7 @@ data class Endpoint(
     val routeHeaders: List<Pair<String, String>> = emptyList(),
     val version: String? = null,
     val bodyId: String? = null,
+    val errorResponseIds: Map<HttpStatusCode, String> = emptyMap(),
 )
 
 data class Response(
