@@ -1,6 +1,5 @@
 package com.diconium.mobile.tools.kebabkrafter.models
 
-import com.diconium.mobile.tools.kebabkrafter.Log
 import io.ktor.http.*
 
 data class SwaggerSpec(val endpoints: List<Endpoint>, val dataSpecs: Map<String, JsonSpecFile>)
@@ -35,12 +34,4 @@ data class UrlType(val required: Boolean, val format: Format) {
         Float,
         StringArray,
     }
-}
-
-fun SwaggerSpec.log() {
-    Log.d("SwaggerSpec:")
-    Log.d("  endpoints:")
-    endpoints.forEach { Log.d("    - $it") }
-    Log.d("  models:")
-    dataSpecs.forEach { Log.d("    - $it") }
 }

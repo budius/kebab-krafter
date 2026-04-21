@@ -1,6 +1,6 @@
 package com.diconium.mobile.tools.kebabkrafter.parser
 
-import com.diconium.mobile.tools.kebabkrafter.Log
+import com.diconium.mobile.tools.kebabkrafter.KebabLogger
 import com.diconium.mobile.tools.kebabkrafter.models.*
 import com.diconium.mobile.tools.kebabkrafter.parser.json.JsonParser
 import io.ktor.http.*
@@ -14,7 +14,7 @@ import io.swagger.v3.parser.core.models.ParseOptions
 import io.swagger.v3.parser.core.models.SwaggerParseResult
 import java.io.File
 
-object SwaggerParser {
+internal class SwaggerParser(private val log: KebabLogger) {
 
     private fun generateEndpoint(
         key: String,
@@ -22,7 +22,7 @@ object SwaggerParser {
         operation: Operation,
         pathParameters: List<Parameter>?,
     ): Endpoint {
-        Log.d("Parsing endpoint $key")
+        log.d("Parsing endpoint $key")
 
         fun findUrlTypeFormat(type: String) = when (type) {
             "string" -> UrlType.Format.String
@@ -144,7 +144,7 @@ object SwaggerParser {
 
     private fun parseSpecs(yamlFile: File, endpoints: List<Endpoint>): Map<String, JsonSpecFile> {
         val rootPath = yamlFile.parent + File.separator
-        val jsonParser = JsonParser(File(rootPath))
+        val jsonParser = JsonParser(log, File(rootPath))
 
         fun String.normalize(): String {
 //            var path = Path(this).normalize().pathString
@@ -192,26 +192,31 @@ object SwaggerParser {
 
         val openApi: OpenAPI = load(false).openAPI
         val endpoints: List<Endpoint> = parseEndpoints(openApi, load(true).openAPI)
-        Log.d("================================")
-        Log.d("Found ${endpoints.size} endpoints:")
+
+        log.d("Found ${endpoints.size} endpoints:")
         endpoints.forEach { endpoint ->
-            Log.d(
-                " |- ${endpoint.path.joinToString("/")}: body(${endpoint.bodyId}) -> response(${endpoint.response.id})",
-            )
+            val path = endpoint.path.joinToString("/")
+            val space = "".padStart(path.length)
+            val success = endpoint.response.status.value
+            log.d("- $path |- ${endpoint.method.value.padEnd(4)} ${endpoint.bodyId ?: ""}")
+            log.d("  $space |  $success ${endpoint.response.id ?: ""}")
+            endpoint.errorResponseIds.forEach { (code, errorId) ->
+                log.d("  $space |  ${code.value} $errorId")
+            }
         }
 
         val specs = parseSpecs(file, endpoints)
 
-        Log.d("Total ${specs.size} JSON schema files")
+        log.d("Total ${specs.size} JSON schema files")
         specs.forEach { (path, spec) ->
-            Log.d("- $path -> ${spec.model.smartToString()}")
+            log.d("- $path -> ${spec.model.smartToString()}")
             if (spec.model is SealedJsonType) {
                 spec.model.types.forEach { type ->
-                    Log.d("  |- ${type.smartToString()}")
+                    log.d("  |- ${type.smartToString()}")
                 }
             }
             spec.definitions.forEach { (name, def) ->
-                Log.d("  |- $name -> ${def.smartToString()}")
+                log.d("  |- $name -> ${def.smartToString()}")
             }
         }
         return SwaggerSpec(endpoints, specs)
