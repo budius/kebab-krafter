@@ -56,16 +56,17 @@ class KtorRouteGenerator(
 
     private fun CodeBlock.Builder.generate(controller: KtorController) {
         var endControlFlow = 0
+
         // begin authentication
         controller.authentication.toSet().forEach { authentication ->
             endControlFlow++
             beginControlFlow("authenticate(\"$authentication\")")
+        }
 
-            // begin headers
-            controller.routeHeaders.toSet().forEach { (headerKey, headerValue) ->
-                endControlFlow++
-                beginControlFlow("header(\"$headerKey\", \"$headerValue\")")
-            }
+        // begin headers
+        controller.routeHeaders.toSet().forEach { (headerKey, headerValue) ->
+            endControlFlow++
+            beginControlFlow("header(\"$headerKey\", \"$headerValue\")")
         }
 
         // actual endpoint

@@ -1,9 +1,6 @@
 import com.diconium.mobile.tools.kebabkrafter.sample.MockServices
 import com.diconium.mobile.tools.kebabkrafter.sample.RealServices
-import com.diconium.mobile.tools.kebabkrafter.sample.cases.installGetEdgeCaseMaps
-import com.diconium.mobile.tools.kebabkrafter.sample.cases.installPostEdgeCaseAcronym
-import com.diconium.mobile.tools.kebabkrafter.sample.cases.installPostEdgeCaseDescription
-import com.diconium.mobile.tools.kebabkrafter.sample.cases.installPostEdgeCaseInlined
+import com.diconium.mobile.tools.kebabkrafter.sample.cases.*
 import com.diconium.mobile.tools.kebabkrafter.sample.cases.security.configureSecurity
 import com.diconium.mobile.tools.kebabkrafter.sample.cases.security.installSecurityGeneratedRoutes
 import com.diconium.mobile.tools.kebabkrafter.sample.gen.petstore.installPetStoreGeneratedRoutes
@@ -46,6 +43,7 @@ fun Application.module() {
             installPostEdgeCaseInlined()
             installPostEdgeCaseDescription()
             installSecurityGeneratedRoutes()
+            installHeadersRouteGeneratedRoutes()
         }
 
         // ktor can also be serving its own swagger API
