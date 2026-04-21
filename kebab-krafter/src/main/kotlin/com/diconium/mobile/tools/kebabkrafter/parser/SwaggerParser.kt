@@ -64,23 +64,21 @@ internal class SwaggerParser(private val log: KebabLogger) {
         )
     }
 
-    private fun parseFailureResponses(operation: Operation): Map<HttpStatusCode, String> {
-        return operation
-            .responses
-            .entries
-            .mapNotNull { (key, value) ->
-                val httpStatus = fromValue(key.toInt())
-                val isFailure = httpStatus.value in (400 until 600)
-                val responseId = value.content?.get("application/json")?.schema?.`$ref`?.takeIf { it.endsWith(".json") }
-                if (responseId != null && isFailure) {
-                    httpStatus to responseId
-                } else {
-                    null
-                }
+    private fun parseFailureResponses(operation: Operation): Map<HttpStatusCode, String> = operation
+        .responses
+        .entries
+        .mapNotNull { (key, value) ->
+            val httpStatus = fromValue(key.toInt())
+            val isFailure = httpStatus.value in (400 until 600)
+            val responseId = value.content?.get("application/json")?.schema?.`$ref`?.takeIf { it.endsWith(".json") }
+            if (responseId != null && isFailure) {
+                httpStatus to responseId
+            } else {
+                null
             }
-            // associate
-            .associate { it }
-    }
+        }
+        // associate
+        .associate { it }
 
     private fun parseSuccessResponse(operation: Operation): Response {
         val successCount = operation.responses.entries.count { fromValue(it.key.toInt()).isSuccess() }

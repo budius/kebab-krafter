@@ -48,12 +48,10 @@ interface SecureCallScope {
 fun Route.installSecurityGeneratedRoutes() {
     installSecurityGeneratedRoutes(
         object : ServiceLocator {
-            override fun <T : Any> RoutingContext.getService(type: KClass<T>): T {
-                return when (type) {
-                    GetData::class -> GetDataController() as T
-                    PostLogin::class -> PostLoginController() as T
-                    else -> throw IllegalArgumentException("Unknown Controller")
-                }
+            override fun <T : Any> RoutingContext.getService(type: KClass<T>): T = when (type) {
+                GetData::class -> GetDataController() as T
+                PostLogin::class -> PostLoginController() as T
+                else -> throw IllegalArgumentException("Unknown Controller")
             }
         },
     )

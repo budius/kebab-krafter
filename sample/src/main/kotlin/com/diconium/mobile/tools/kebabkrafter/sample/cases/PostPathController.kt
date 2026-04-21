@@ -8,19 +8,14 @@ import com.diconium.mobile.tools.kebabkrafter.sample.gen.case.headersRoute.model
 import io.ktor.server.routing.*
 import kotlin.reflect.KClass
 
-
 class PostPathController : PostPath {
-    override suspend fun CallScope.execute(body: NotImportant): NotImportant {
-        return NotImportant("value")
-    }
+    override suspend fun CallScope.execute(body: NotImportant): NotImportant = NotImportant("value")
 }
 
 fun Route.installHeadersRouteGeneratedRoutes() {
     installHeadersRouteGeneratedRoutes(
         object : ServiceLocator {
-            override fun <T : Any> RoutingContext.getService(type: KClass<T>): T {
-                return PostPathController() as T
-            }
+            override fun <T : Any> RoutingContext.getService(type: KClass<T>): T = PostPathController() as T
         },
     )
 }
