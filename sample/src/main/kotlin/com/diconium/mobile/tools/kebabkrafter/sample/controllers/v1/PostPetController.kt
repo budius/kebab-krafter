@@ -7,6 +7,14 @@ import com.diconium.mobile.tools.kebabkrafter.sample.gen.petstore.models.v1.Post
 
 class PostPetController(private val createPet: suspend (Pet) -> Pet) : PostPet {
     override suspend fun CallScope.execute(body: PostPetRequest): Pet {
+
+        body.extras?.let {
+            println("This pet is (${it.size}):")
+            it.forEach {
+                println("- $it")
+            }
+        }
+
         val newPet = when (body.petType) {
             PostPetRequest.PetType.DOG -> Pet.Dog("", body.name, "", 0f, 0, "", body.dateOfBirth)
             PostPetRequest.PetType.CAT -> Pet.Cat("", body.name, "", 0f, body.dateOfBirth)

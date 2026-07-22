@@ -13,6 +13,7 @@ data class JsonSchema(
     val defs: Map<String, JsonSchema> = emptyMap(),
     val oneOf: List<OneAnyOf> = emptyList(),
     val anyOf: List<OneAnyOf> = emptyList(),
+    val enum: List<String>?,
 ) {
     @Serializable
     data class Item(

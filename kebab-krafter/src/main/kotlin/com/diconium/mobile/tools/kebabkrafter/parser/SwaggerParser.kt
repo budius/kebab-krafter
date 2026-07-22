@@ -2,6 +2,7 @@ package com.diconium.mobile.tools.kebabkrafter.parser
 
 import com.diconium.mobile.tools.kebabkrafter.Log
 import com.diconium.mobile.tools.kebabkrafter.models.*
+import com.diconium.mobile.tools.kebabkrafter.models.SpecField.Type.DataArray
 import com.diconium.mobile.tools.kebabkrafter.models.SpecField.Type.DataModel
 import io.ktor.http.*
 import io.ktor.http.HttpStatusCode.Companion.fromValue
@@ -12,14 +13,9 @@ import io.swagger.v3.oas.models.PathItem
 import io.swagger.v3.oas.models.parameters.Parameter
 import io.swagger.v3.parser.core.models.ParseOptions
 import io.swagger.v3.parser.core.models.SwaggerParseResult
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import java.io.File
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
-@OptIn(ExperimentalSerializationApi::class)
 private val json = Json {
     ignoreUnknownKeys = true
     explicitNulls = false
@@ -84,7 +80,7 @@ object SwaggerParser {
                 id = null,
                 status = fromValue(responseStatus),
                 type = ResponseType.Binary,
-                contentTypeHeader = content?.toList()?.first()?.first!!,
+                contentTypeHeader = content.toList().first().first,
                 headers = headers,
             )
         } else {
@@ -171,7 +167,12 @@ object SwaggerParser {
                     // sometimes a .json spec might be just to specify the description/pattern and not be a data model
                     // here we have just want to remember them and return null
                     // in the next step we'll replace them in the spec models back to their real type
-                    notAmodel[path] = type
+                    if (type == SpecField.Type.String && schema.enum?.isNotEmpty() == true) {
+                        // special handling when finding an `enum` type in a ref
+                        notAmodel[path] = SpecField.Type.Enum(schema.enum)
+                    } else {
+                        notAmodel[path] = type
+                    }
                     return@computeIfAbsent null
                 }
 
@@ -238,7 +239,7 @@ object SwaggerParser {
                         fields += SpecField(
                             name = name,
                             description = value.description,
-                            type = SpecField.Type.DataModel(id),
+                            type = DataModel(id),
                             isRequired = schema.required.contains(name),
                         )
                     }
@@ -252,7 +253,7 @@ object SwaggerParser {
                         fields += SpecField(
                             name = name,
                             description = value.description,
-                            type = SpecField.Type.DataModel(id),
+                            type = DataModel(id),
                             isRequired = schema.required.contains(name),
                         )
                     }
@@ -266,7 +267,7 @@ object SwaggerParser {
                                 fields += SpecField(
                                     name = name,
                                     description = value.description,
-                                    type = SpecField.Type.DataArray(arrayType),
+                                    type = DataArray(arrayType),
                                     isRequired = schema.required.contains(name),
                                 )
                             }
@@ -279,7 +280,7 @@ object SwaggerParser {
                                 fields += SpecField(
                                     name = name,
                                     description = value.description,
-                                    type = SpecField.Type.DataArray(SpecField.Type.DataModel(id)),
+                                    type = DataArray(DataModel(id)),
                                     isRequired = schema.required.contains(name),
                                 )
                             }
@@ -292,7 +293,7 @@ object SwaggerParser {
                                 fields += SpecField(
                                     name = name,
                                     description = value.description,
-                                    type = SpecField.Type.DataArray(SpecField.Type.DataModel(id)),
+                                    type = DataArray(DataModel(id)),
                                     isRequired = schema.required.contains(name),
                                 )
                             }
@@ -327,11 +328,23 @@ object SwaggerParser {
                             path,
                             model.copy(
                                 fields = model.fields.map { specField ->
+
+                                    // handle the correct type as direct elements
                                     if (specField.type is DataModel) {
                                         notAmodel[specField.type.id]?.let { correctType ->
                                             specField.copy(type = correctType)
                                         } ?: specField
-                                    } else {
+                                    }
+
+                                    // handle the correct type as array elements
+                                    else if (specField.type is DataArray && specField.type.type is DataModel) {
+                                        notAmodel[specField.type.type.id]?.let { correctType ->
+                                            specField.copy(type = DataArray(type = correctType))
+                                        } ?: specField
+                                    }
+
+                                    // normal case
+                                    else {
                                         specField
                                     }
                                 },

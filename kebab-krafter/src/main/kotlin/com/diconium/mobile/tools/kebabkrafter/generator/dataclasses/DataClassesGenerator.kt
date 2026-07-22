@@ -69,9 +69,13 @@ class DataClassesGenerator(
             val enumLookup = mutableMapOf<SpecField.Type.Enum, TypeName>()
             val enums = dataClass
                 .fields
-                .filter { it.type is SpecField.Type.Enum }
+                .filter {
+                    it.type is SpecField.Type.Enum ||
+                        (it.type is SpecField.Type.DataArray && it.type.type is SpecField.Type.Enum)
+                }
                 .map {
-                    val enum = it.type as SpecField.Type.Enum
+                    val enum = it.type as? SpecField.Type.Enum
+                        ?: (it.type as SpecField.Type.DataArray).type as SpecField.Type.Enum
 
                     val type = (
                         dataClass.parentId?.let { parentId ->
