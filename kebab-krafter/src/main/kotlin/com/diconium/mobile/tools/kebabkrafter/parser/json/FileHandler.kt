@@ -45,7 +45,7 @@ class FileHandler(private val root: File, private val file: File) {
 
     /** Package name to use for this file */
     val relativePackageName: String by lazy {
-        relativeParent.replace("/", ".").replace("..", ".").trim('.')
+        relativeParent.replace(File.separator, ".").replace("..", ".").trim('.')
     }
 
     /**

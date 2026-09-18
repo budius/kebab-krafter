@@ -18,7 +18,7 @@ internal fun preParseGradleInputs(
     transformers: Transformers,
 ): ParsedInputs {
     // clean the output folder
-    File(baseDir, packageName.replace(".", "/")).apply {
+    File(baseDir, packageName.replace(".", File.separator)).apply {
         deleteRecursively()
         mkdirs()
     }
