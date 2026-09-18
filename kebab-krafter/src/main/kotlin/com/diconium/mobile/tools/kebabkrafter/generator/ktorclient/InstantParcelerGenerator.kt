@@ -9,7 +9,7 @@ import java.io.File
 
 object InstantParcelerGenerator {
     fun generate(outputDirectory: File, packageName: String) {
-        val folder = File(outputDirectory, packageName.replace(".", "/"))
+        val folder = File(outputDirectory, packageName.replace(".", File.separator))
         folder.mkdirs()
         File(folder, "InstantParceler.kt").writeText(CODE.replace(PACKAGE_NAME, packageName))
     }

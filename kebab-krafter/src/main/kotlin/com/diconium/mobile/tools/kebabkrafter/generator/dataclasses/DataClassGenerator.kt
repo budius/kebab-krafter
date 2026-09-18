@@ -214,10 +214,10 @@ internal class DataClassGenerator(
 
     private fun classNameOfFile(filePath: String): ClassName =
         with(Path(basePackageName.replace(".", File.separator) + File.separator + filePath)) {
-            ClassName(parent.toString().replace("/", "."), nameWithoutExtension.toPascalCase())
+            ClassName(parent.toString().replace(File.separator, "."), nameWithoutExtension.toPascalCase())
         }
 
-    private fun packageFor(name: String): String = basePackageName + "." + name.replace("/", ".")
+    private fun packageFor(name: String): String = basePackageName + "." + name.replace(File.separator, ".")
 
     private fun BaseJsonSpec.asPoetType(parents: List<String>): TypeName = when (this) {
         is BaseJsonType -> if (parents.isEmpty()) {
