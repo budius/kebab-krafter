@@ -45,3 +45,42 @@ jobs:
         env:
           KEBAB_VERSION: 0.0.1-SNAPSHOT
         run: ./gradlew assembleDebug testDebugUnitTest
+
+  # because this library deals with file paths,
+  # it was identified the importance to run all the cheks also in windows
+  checks-windows:
+    name: Windows Pull Request Checks
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: 'gradle'
+          cache-dependency-path: |
+            **/*.gradle*
+            **/gradle.properties
+            **/gradle-wrapper.properties
+            **/gradle/libs.versions.toml
+
+#      - name: Build - Plugin
+#        working-directory: kebab-krafter
+#        env:
+#          KEBAB_VERSION: 0.0.1-SNAPSHOT
+#        run: gradle check
+
+      - name: Build - Sample
+        working-directory: sample
+        env:
+          KEBAB_VERSION: 0.0.1-SNAPSHOT
+        run: gradle check
+
+      - name: Build - Android
+        working-directory: android
+        env:
+          KEBAB_VERSION: 0.0.1-SNAPSHOT
+        run: gradle assembleDebug testDebugUnitTest
