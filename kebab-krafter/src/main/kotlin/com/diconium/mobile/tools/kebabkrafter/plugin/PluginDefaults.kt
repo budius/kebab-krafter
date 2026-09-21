@@ -51,8 +51,8 @@ internal fun Project.registerAndroid(task: TaskProvider<GenerateKtorClientTask>,
     fun register() {
         task.configure { it.parcelable.set(parcelable) }
         extensions.getByType(AndroidComponentsExtension::class.java).onVariants { variant ->
-            variant.sources.java?.registerVariant()
-            variant.sources.kotlin?.registerVariant()
+            variant.sources.kotlin?.apply { registerVariant() }
+                ?: run { variant.sources.java?.registerVariant() }
         }
     }
 

@@ -44,10 +44,12 @@ jobs:
         working-directory: android
         env:
           KEBAB_VERSION: 0.0.1-SNAPSHOT
-        run: ./gradlew assembleDebug testDebugUnitTest
+        # sourceDebugJar was causing issues, so we add checks to the PR to avoid regressions
+        # see: https://github.com/budius/kebab-krafter/issues/30
+        run: ./gradlew assembleDebug testDebugUnitTest :kraftKebabAndroidLibary:sourceDebugJar
 
   # because this library deals with file paths,
-  # it was identified the importance to run all the cheks also in windows
+  # it was identified the importance to run all the checks also in windows
   checks-windows:
     name: Windows Pull Request Checks
     runs-on: windows-latest
@@ -83,4 +85,6 @@ jobs:
         working-directory: android
         env:
           KEBAB_VERSION: 0.0.1-SNAPSHOT
-        run: gradle assembleDebug testDebugUnitTest
+        # sourceDebugJar was causing issues, so we add checks to the PR to avoid regressions
+        # see: https://github.com/budius/kebab-krafter/issues/30
+        run: ./gradlew assembleDebug testDebugUnitTest :kraftKebabAndroidLibary:sourceDebugJar
