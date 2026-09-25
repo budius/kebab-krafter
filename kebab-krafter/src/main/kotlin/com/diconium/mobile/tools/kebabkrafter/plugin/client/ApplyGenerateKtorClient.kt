@@ -40,6 +40,7 @@ fun applyGenerateKtorClient(target: Project) {
             it.clientName.set(ktorClientInput.name)
             it.packageName.set(ktorClientInput.packageName)
             it.specFile.set(ktorClientInput.specFile)
+            it.schemasFolder.set(ktorClientInput.schemasFolder)
             it.outputFolder.set(ktorClientInput.outputFolder)
             it.parcelable.set(false)
             it.transformerSpec.endpointTransformer.set(ktorClientInput.transformerSpec.endpointTransformer)
