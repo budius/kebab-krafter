@@ -54,6 +54,12 @@ kotlin {
     }
 }
 
+sourceSets {
+    main {
+        resources.srcDir("../sample-resources")
+    }
+}
+
 ktlint {
     android = false
     filter {
@@ -114,8 +120,8 @@ ktorServer {
     // The PetStore example
     create("petStore") {
         packageName = "com.diconium.mobile.tools.kebabkrafter.sample.gen.server.petstore"
-        specFile = File(rootDir, "src/main/resources/petstore/swagger.yml")
-        schemasFolder = File(rootDir, "src/main/resources/petstore/models")
+        specFile = File(rootDir, "../sample-resources/petstore/swagger.yml")
+        schemasFolder = File(rootDir, "../sample-resources/petstore/models")
 
         // use this for local testing your own APIs
         // specFile = File(rootDir, "test-data/api.yml")
@@ -269,8 +275,8 @@ ktorClient {
     // The PetStore example
     create("petStore") {
         packageName = "com.diconium.mobile.tools.kebabkrafter.sample.gen.client.petstore"
-        specFile = File(rootDir, "src/main/resources/petstore/swagger.yml")
-        schemasFolder = File(rootDir, "src/main/resources/petstore/models")
+        specFile = File(rootDir, "../sample-resources/petstore/swagger.yml")
+        schemasFolder = File(rootDir, "../sample-resources/petstore/models")
     }
 
     //region development/testing of edge cases and complex data structures
