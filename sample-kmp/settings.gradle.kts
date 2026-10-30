@@ -1,6 +1,7 @@
 rootProject.name = "KebabKrafterKmp"
 
 pluginManagement {
+	includeBuild("../kebab-krafter")
     repositories {
         google {
             mavenContent {
