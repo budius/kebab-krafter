@@ -34,14 +34,14 @@ jobs:
           KEBAB_VERSION: 0.0.1-SNAPSHOT
         run: ./gradlew check
 
-      - name: Build - Sample
-        working-directory: sample
+      - name: Build - JVM Sample
+        working-directory: sample-jvm
         env:
           KEBAB_VERSION: 0.0.1-SNAPSHOT
         run: ./gradlew check
 
-      - name: Build - Android
-        working-directory: android
+      - name: Build - Android Sample
+        working-directory: sample-android
         env:
           KEBAB_VERSION: 0.0.1-SNAPSHOT
         # sourceDebugJar was causing issues, so we add checks to the PR to avoid regressions
@@ -75,14 +75,14 @@ jobs:
           KEBAB_VERSION: 0.0.1-SNAPSHOT
         run: gradle check
 
-      - name: Build - Sample
-        working-directory: sample
+      - name: Build - JVM Sample
+        working-directory: sample-jvm
         env:
           KEBAB_VERSION: 0.0.1-SNAPSHOT
         run: gradle check
 
-      - name: Build - Android
-        working-directory: android
+      - name: Build - Android Sample
+        working-directory: sample-android
         env:
           KEBAB_VERSION: 0.0.1-SNAPSHOT
         # sourceDebugJar was causing issues, so we add checks to the PR to avoid regressions
