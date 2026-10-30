@@ -11,7 +11,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Test
 import kotlin.reflect.full.isSubclassOf
 
-class GeneratedIsParcelableTest {
+class GeneratedIsNotParcelableTest {
 
 	@Test
 	fun should_not_generated_parcelable() {

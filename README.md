@@ -126,7 +126,7 @@ class KoinServiceLocator(private val koin: Koin) : ServiceLocator {
 
 ### Further Examples
 
-Check the `sample/` app with the "Pet Store" for a full example.
+Check the `sample-jvm` apps with the "Pet Store" for a full example.
 
 ### Generate a Ktor Client
 
@@ -166,7 +166,7 @@ val result = getPetId("123")
 
 ### Setup
 
-The most practical way is to open on IntelliJ the sample app. The `sample/settings.gradle` points to the source code of the plugin and applies it to the project.
+The most practical way is to open on IntelliJ one of the sample apps (`sample-jvm` has client and server examples, `sample-android` only shows client). For example, in the JVM sample, the `sample-jvm/settings.gradle` points to the source code of the plugin and applies it to the project.
 
 After gradle import/index the source code from the plugin will be linked and display on the IDE and it's trivial to do the changes on the plugin and see the effects on the sample.
 
