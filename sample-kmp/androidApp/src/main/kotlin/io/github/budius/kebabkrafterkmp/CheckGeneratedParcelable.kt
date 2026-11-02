@@ -6,10 +6,10 @@ import io.github.budius.kebabkrafterkmp.gen.android.petstore.services.v1.getPetI
 import io.ktor.client.HttpClient
 
 suspend fun checkGeneratedParcelable(client: HttpClient) {
-	val bundle = Bundle()
-	val pet = client.getPetId("123")
-	bundle.putParcelable("pet", pet.getOrThrow().body)
+    val bundle = Bundle()
+    val pet = client.getPetId("123")
+    bundle.putParcelable("pet", pet.getOrThrow().body)
 
-	val deletePet = client.deletePetId
-	deletePet("123")
+    val deletePet = client.deletePetId
+    deletePet("123")
 }
