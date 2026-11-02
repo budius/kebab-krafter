@@ -35,6 +35,7 @@ dependencies {
 
     // use `compileOnly` or else a server would need to add `google()` repository
     compileOnly(libs.android.gradle.plugin)
+    compileOnly(libs.kotlin.gradle.plugin.api)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test)
