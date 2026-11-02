@@ -101,3 +101,16 @@ jobs:
         # sourceDebugJar was causing issues, so we add checks to the PR to avoid regressions
         # see: https://github.com/budius/kebab-krafter/issues/30
         run: ./gradlew assembleDebug testDebugUnitTest :kraftKebabAndroidLibary:sourceDebugJar
+
+      - name: Build - KMP Sample
+        working-directory: sample-kmp
+        env:
+          KEBAB_VERSION: 0.0.1-SNAPSHOT
+        run: >
+            ./gradlew
+            ktlintCheck
+            :androidApp:assembleDebug
+            :desktopApp:compileKotlin
+# Uncomment those 2 check after fixing https://github.com/budius/kebab-krafter/issues/34
+#            :webApp:compileKotlinJs
+#            :webApp:compileKotlinWasmJs
