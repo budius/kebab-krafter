@@ -44,6 +44,13 @@ abstract class KtorServerServiceExtension(@get:Input val name: String) {
     abstract val installFunction: Property<String>
 
     /**
+     * Uses Ktor's ByteReadChannel instead of the JVM-only java.io.InputStream
+     */
+    @get:Input
+    @get:Optional
+    abstract val optInKtorBinaryType: Property<Boolean>
+
+    /**
      * Specification for the custom context where and API call is executed
      */
     fun contextSpec(action: Action<ContextSpecExtension>) {

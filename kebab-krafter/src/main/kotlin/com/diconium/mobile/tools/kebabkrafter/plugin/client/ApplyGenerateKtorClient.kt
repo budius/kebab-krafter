@@ -6,7 +6,7 @@ import com.diconium.mobile.tools.kebabkrafter.generator.toPascalCase
 import com.diconium.mobile.tools.kebabkrafter.plugin.DefaultEndpointTransformer
 import com.diconium.mobile.tools.kebabkrafter.plugin.DefaultKtorTransformer
 import com.diconium.mobile.tools.kebabkrafter.plugin.registerAndroid
-import com.diconium.mobile.tools.kebabkrafter.plugin.registerClientJvm
+import com.diconium.mobile.tools.kebabkrafter.plugin.registerJvm
 import com.diconium.mobile.tools.kebabkrafter.plugin.registerKmp
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
@@ -53,8 +53,26 @@ fun applyGenerateKtorClient(target: Project) {
         baseTask.configure { it.dependsOn(task) }
 
         // wire task output to the main source set
-        target.registerClientJvm(task, ktorClientInput.optInKtorBinaryType)
         target.registerAndroid(task, ktorClientInput.parcelable, ktorClientInput.optInKtorBinaryType)
         target.registerKmp(task)
+        target.registerJvm(task) { optInKtorBinaryType.set(ktorClientInput.optInKtorBinaryType) }
+        target.afterEvaluate {
+            val supportsOptionalBinaryType =
+                !target.pluginManager.hasPlugin("org.jetbrains.kotlin.multiplatform") &&
+                    (
+                        target.pluginManager.hasPlugin("org.jetbrains.kotlin.jvm") ||
+                            target.pluginManager.hasPlugin("com.android.application") ||
+                            target.pluginManager.hasPlugin("com.android.library")
+                        )
+
+            if (supportsOptionalBinaryType && !ktorClientInput.optInKtorBinaryType.get()) {
+                target.logger.warn(
+                    "/!\\ Generate Client - " +
+                        "Ktor binary support is not enabled for `${ktorClientInput.name.toPascalCase()}`. " +
+                        "Generated clients will use the deprecated `InputStream` type, " +
+                        "which will be replaced by `ByteReadChannel` in version 3.0. Enable `optInKtorBinaryType` to migrate.",
+                )
+            }
+        }
     }
 }

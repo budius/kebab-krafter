@@ -17,8 +17,8 @@ import com.diconium.mobile.tools.kebabkrafter.sample.gen.server.petstore.models.
 import com.diconium.mobile.tools.kebabkrafter.sample.gen.server.petstore.models.v1.PetsResponse
 import com.diconium.mobile.tools.kebabkrafter.sample.gen.server.petstore.models.v1.PostPetRequest
 import com.diconium.mobile.tools.kebabkrafter.sample.gen.server.petstore.models.v1.common.Color
-import java.io.ByteArrayInputStream
-import java.io.InputStream
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.toByteArray
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -96,7 +96,7 @@ class PetStoreTest {
         val ctrl = object : GetPetIdPdf {
             override suspend fun CallScope.execute(id: String): GetPetIdPdfResponse {
                 counter += id
-                val body = ByteArrayInputStream(bytes)
+                val body = ByteReadChannel(bytes)
                 return GetPetIdPdfResponse("header.pdf", body)
             }
         }
@@ -108,7 +108,7 @@ class PetStoreTest {
             assertTrue(result.isSuccess)
             assertEquals(listOf("mwi"), counter)
             val header = result.getOrThrow().headerContentDisposition
-            val body = result.getOrThrow().body.readAllBytes()
+            val body = result.getOrThrow().body.toByteArray()
             assertEquals("header.pdf", header)
             assertContentEquals(bytes, body)
         }
@@ -120,9 +120,9 @@ class PetStoreTest {
         val bytes = "this is a photo of a cat".toByteArray(Charsets.UTF_8)
         val counter = mutableListOf<String>()
         val ctrl = object : GetPetIdPhoto {
-            override suspend fun CallScope.execute(id: String): InputStream {
+            override suspend fun CallScope.execute(id: String): ByteReadChannel {
                 counter += id
-                return ByteArrayInputStream(bytes)
+                return ByteReadChannel(bytes)
             }
         }
 
@@ -133,7 +133,7 @@ class PetStoreTest {
             // then
             assertTrue(result.isSuccess)
             assertEquals(listOf("mqo"), counter)
-            assertContentEquals(bytes, result.getOrThrow().readAllBytes())
+            assertContentEquals(bytes, result.getOrThrow().toByteArray())
         }
     }
 

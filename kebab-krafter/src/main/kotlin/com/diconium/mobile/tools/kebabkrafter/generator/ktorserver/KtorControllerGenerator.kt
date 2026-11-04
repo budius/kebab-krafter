@@ -8,10 +8,14 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.TypeSpec
 
-class KtorControllerGenerator(private val basePackage: String, private val context: ClassName) {
+class KtorControllerGenerator(
+    private val basePackage: String,
+    private val context: ClassName,
+    private val optInKtorBinaryType: Boolean,
+) {
 
     fun generate(controller: KtorController): FileSpec {
-        val poet = PoetController(basePackage, controller)
+        val poet = PoetController(basePackage, controller, optInKtorBinaryType)
 
         val function = with(poet) {
             FunSpec

@@ -5,7 +5,7 @@ import com.diconium.mobile.tools.kebabkrafter.generator.toCamelCase
 import com.diconium.mobile.tools.kebabkrafter.generator.toPascalCase
 import com.diconium.mobile.tools.kebabkrafter.plugin.DefaultEndpointTransformer
 import com.diconium.mobile.tools.kebabkrafter.plugin.DefaultKtorTransformer
-import com.diconium.mobile.tools.kebabkrafter.plugin.registerServer
+import com.diconium.mobile.tools.kebabkrafter.plugin.registerJvm
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 
@@ -31,7 +31,7 @@ fun applyGenerateKtorServer(target: Project) {
             val output = target.layout.buildDirectory.dir("generated/sources/ktorServer/serviceLocator/")
             task.outputFolder.convention(output)
         }
-        target.registerServer(registered)
+        target.registerJvm(registered)
         registered
     }
 
@@ -41,6 +41,7 @@ fun applyGenerateKtorServer(target: Project) {
         val folderName = ktorServerInput.name.toCamelCase()
         val output = target.layout.buildDirectory.dir("generated/sources/ktorServer/$folderName/")
         ktorServerInput.outputFolder.convention(output)
+        ktorServerInput.optInKtorBinaryType.convention(false)
         ktorServerInput.transformerSpec.endpointTransformer.convention(DefaultEndpointTransformer::class.java)
         ktorServerInput.transformerSpec.ktorMapper.convention(DefaultKtorControllerMapper::class.java)
         ktorServerInput.transformerSpec.ktorTransformer.convention(DefaultKtorTransformer::class.java)
@@ -60,6 +61,16 @@ fun applyGenerateKtorServer(target: Project) {
         baseTask.configure { it.dependsOn(task) }
 
         // wire task output to the main source set
-        target.registerServer(task)
+        target.registerJvm(task) { optInKtorBinaryType.set(ktorServerInput.optInKtorBinaryType) }
+        target.afterEvaluate {
+            if (!ktorServerInput.optInKtorBinaryType.get()) {
+                target.logger.warn(
+                    "/!\\ Generate Server - " +
+                        "Ktor binary support is not enabled for `${ktorServerInput.name.toPascalCase()}`. " +
+                        "Generated clients will use the deprecated `InputStream` type, " +
+                        "which will be replaced by `ByteReadChannel` in version 3.0. Enable `optInKtorBinaryType` to migrate.",
+                )
+            }
+        }
     }
 }

@@ -8,8 +8,8 @@ import com.diconium.mobile.tools.kebabkrafter.sample.gen.client.case.supportclas
 import com.diconium.mobile.tools.kebabkrafter.sample.gen.server.case.supportclass.controllers.v1.some.*
 import com.diconium.mobile.tools.kebabkrafter.sample.gen.server.case.supportclass.installCaseSupportClassGeneratedRoutes
 import com.diconium.mobile.tools.kebabkrafter.sample.gen.server.case.supportclass.models.NotImportant
-import java.io.ByteArrayInputStream
-import java.io.InputStream
+import io.ktor.utils.io.ByteReadChannel
+import io.ktor.utils.io.toByteArray
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -77,7 +77,7 @@ class CaseSupportClassTest {
                 counter++
                 return GetPathWithSupportClassHeaderBytesResponse(
                     "random-string",
-                    ByteArrayInputStream("here are some bytes".toByteArray()),
+                    ByteReadChannel("here are some bytes".toByteArray()),
                 )
             }
         }
@@ -94,7 +94,7 @@ class CaseSupportClassTest {
             )
             assertContentEquals(
                 "here are some bytes".toByteArray(),
-                result.getOrThrow().body.readAllBytes(),
+                result.getOrThrow().body.toByteArray(),
             )
         }
     }
@@ -104,9 +104,9 @@ class CaseSupportClassTest {
         // given
         var counter = 0
         val ctrl = object : GetPathWithBytes {
-            override suspend fun CallScope.execute(): InputStream {
+            override suspend fun CallScope.execute(): ByteReadChannel {
                 counter++
-                return ByteArrayInputStream("here are some bytes".toByteArray())
+                return ByteReadChannel("here are some bytes".toByteArray())
             }
         }
         kebabSelfTest(ctrl) {
@@ -117,7 +117,7 @@ class CaseSupportClassTest {
             assertTrue(result.isSuccess)
             assertContentEquals(
                 "here are some bytes".toByteArray(),
-                result.getOrThrow().readAllBytes(),
+                result.getOrThrow().toByteArray(),
             )
         }
     }

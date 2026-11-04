@@ -15,7 +15,7 @@ import java.io.InputStream
 internal class PoetController(
     private val basePackage: String,
     private val controller: KtorController,
-    private val optInKtorBinaryType: Boolean = false,
+    private val optInKtorBinaryType: Boolean,
 ) {
 
     val controllerClassName = ClassName("$basePackage.${controller.packageName}", controller.className.toPascalCase())
@@ -111,7 +111,7 @@ internal class PoetController(
             // input stream (if any)
             if (optInKtorBinaryType) {
                 addProperty(
-                    PropertySpec.builder(name = "body", type =ByteReadChannel::class.asTypeName())
+                    PropertySpec.builder(name = "body", type = ByteReadChannel::class.asTypeName())
                         .initializer("body")
                         .build(),
                 )

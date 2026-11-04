@@ -18,6 +18,7 @@ internal fun generateKtorServerFor(
     contextSpec: ContextSpec,
     transformers: Transformers,
     installFunction: String,
+    optInKtorBinaryType: Boolean,
 ) {
     val inputs = preParseGradleInputs(log, packageName, baseDir, specFile, transformers)
     val dataSpecs = inputs.dataSpecs
@@ -37,6 +38,7 @@ internal fun generateKtorServerFor(
     val ctrlGenerator = KtorControllerGenerator(
         basePackage = packageName,
         context = contextSpec.asClassName(),
+        optInKtorBinaryType = optInKtorBinaryType,
     )
     controllers.forEach { ctrl ->
         log.d("- ${ctrl.logName}")
@@ -48,6 +50,7 @@ internal fun generateKtorServerFor(
         basePackage = packageName,
         context = contextSpec,
         outputDirectory = baseDir,
+        optInKtorBinaryType = optInKtorBinaryType,
     )
     routeGenerator.generate(installFunction, controllers)
     //endregion

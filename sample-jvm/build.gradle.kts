@@ -122,6 +122,7 @@ ktorServer {
         packageName = "com.diconium.mobile.tools.kebabkrafter.sample.gen.server.petstore"
         specFile = File(rootDir, "../sample-resources/petstore/swagger.yml")
         schemasFolder = File(rootDir, "../sample-resources/petstore/models")
+        optInKtorBinaryType = true
 
         // use this for local testing your own APIs
         // specFile = File(rootDir, "test-data/api.yml")
@@ -138,6 +139,7 @@ ktorServer {
         packageName = "com.diconium.mobile.tools.kebabkrafter.sample.gen.server.case.maps"
         specFile = File(rootDir, "testCases/maps/swagger.yml")
         schemasFolder = File(rootDir, "testCases/maps/models/")
+        optInKtorBinaryType = true
         contextSpec {
             packageName = "com.diconium.mobile.tools.kebabkrafter.sample"
             className = "CallScope"
@@ -148,6 +150,7 @@ ktorServer {
         packageName = "com.diconium.mobile.tools.kebabkrafter.sample.gen.server.case.acronym"
         specFile = File(rootDir, "testCases/acronym/swagger.yml")
         schemasFolder = File(rootDir, "testCases/acronym/models/")
+        optInKtorBinaryType = true
         contextSpec {
             packageName = "com.diconium.mobile.tools.kebabkrafter.sample"
             className = "CallScope"
@@ -158,6 +161,7 @@ ktorServer {
         packageName = "com.diconium.mobile.tools.kebabkrafter.sample.gen.server.case.supportclass"
         specFile = File(rootDir, "testCases/caseSupportClass/swagger.yml")
         schemasFolder = File(rootDir, "testCases/caseSupportClass/models/")
+        optInKtorBinaryType = true
         contextSpec {
             packageName = "com.diconium.mobile.tools.kebabkrafter.sample"
             className = "CallScope"
@@ -168,6 +172,7 @@ ktorServer {
         packageName = "com.diconium.mobile.tools.kebabkrafter.sample.gen.server.case.inlined"
         specFile = File(rootDir, "testCases/inlined/swagger.yml")
         schemasFolder = File(rootDir, "testCases/inlined/models/")
+        optInKtorBinaryType = true
         contextSpec {
             packageName = "com.diconium.mobile.tools.kebabkrafter.sample"
             className = "CallScope"
@@ -277,6 +282,7 @@ ktorClient {
         packageName = "com.diconium.mobile.tools.kebabkrafter.sample.gen.client.petstore"
         specFile = File(rootDir, "../sample-resources/petstore/swagger.yml")
         schemasFolder = File(rootDir, "../sample-resources/petstore/models")
+        optInKtorBinaryType = true
     }
 
     //region development/testing of edge cases and complex data structures
@@ -284,21 +290,25 @@ ktorClient {
         packageName = "com.diconium.mobile.tools.kebabkrafter.sample.gen.client.case.maps"
         specFile = File(rootDir, "testCases/maps/swagger.yml")
         schemasFolder = File(rootDir, "testCases/maps/models/")
+        optInKtorBinaryType = true
     }
     create("caseAcronym") {
         packageName = "com.diconium.mobile.tools.kebabkrafter.sample.gen.client.case.acronym"
         specFile = File(rootDir, "testCases/acronym/swagger.yml")
         schemasFolder = File(rootDir, "testCases/acronym/models/")
+        optInKtorBinaryType = true
     }
     create("caseSupportClass") {
         packageName = "com.diconium.mobile.tools.kebabkrafter.sample.gen.client.case.supportclass"
         specFile = File(rootDir, "testCases/caseSupportClass/swagger.yml")
         schemasFolder = File(rootDir, "testCases/caseSupportClass/models/")
+        optInKtorBinaryType = true
     }
     create("caseInlined") {
         packageName = "com.diconium.mobile.tools.kebabkrafter.sample.gen.client.case.inlined"
         specFile = File(rootDir, "testCases/inlined/swagger.yml")
         schemasFolder = File(rootDir, "testCases/inlined/models/")
+        optInKtorBinaryType = true
     }
     create("caseDescriptions") {
         packageName = "com.diconium.mobile.tools.kebabkrafter.sample.gen.client.case.descriptions"

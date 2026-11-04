@@ -8,6 +8,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Console
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.TaskAction
 
@@ -16,6 +17,9 @@ abstract class GenerateKtorServerTask : DefaultTask() {
 
     @get:Console
     abstract val log: Property<Boolean>
+
+    @get:Input
+    abstract val optInKtorBinaryType: Property<Boolean>
 
     @get:Nested
     abstract val ktorServerInput: Property<KtorServerServiceExtension>
@@ -37,6 +41,7 @@ abstract class GenerateKtorServerTask : DefaultTask() {
                     )
                 },
                 transformers = transformerSpec.buildTransformers(),
+                optInKtorBinaryType = optInKtorBinaryType.get(),
             )
         }
     }

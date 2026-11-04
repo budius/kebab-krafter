@@ -8,6 +8,7 @@ import com.diconium.mobile.tools.kebabkrafter.KtorTransformer
 import com.diconium.mobile.tools.kebabkrafter.models.Endpoint
 import com.diconium.mobile.tools.kebabkrafter.plugin.client.GenerateKtorClientTask
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Property
@@ -33,21 +34,8 @@ private val SourceSet.kotlin: SourceDirectorySet
         as SourceDirectorySet
 
 //endregion
-internal fun Project.registerServer(task: Any) {
-    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
-        extensions.configure<SourceSetContainer>("sourceSets") { container ->
-            container.named("main").configure { sourceSet ->
-                sourceSet.java.srcDirs(task)
-                sourceSet.kotlin.srcDirs(task)
-            }
-        }
-    }
-}
 
-internal fun Project.registerClientJvm(
-    task: TaskProvider<GenerateKtorClientTask>,
-    optInKtorBinaryType: Property<Boolean>,
-) {
+internal fun <T : Task> Project.registerJvm(task: TaskProvider<T>, configureTask: T.() -> Unit = {}) {
     pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
         extensions.configure<SourceSetContainer>("sourceSets") { container ->
             container.named("main").configure { sourceSet ->
@@ -55,8 +43,8 @@ internal fun Project.registerClientJvm(
                 sourceSet.kotlin.srcDirs(task)
             }
         }
-        // KMP `desktopApp` and `server` can use whatever type
-        task.configure { it.optInKtorBinaryType.set(optInKtorBinaryType) }
+        // JVM projects or KMP `desktopApp` and `server` modules can use whatever type
+        task.configure { it.configureTask() }
     }
 }
 

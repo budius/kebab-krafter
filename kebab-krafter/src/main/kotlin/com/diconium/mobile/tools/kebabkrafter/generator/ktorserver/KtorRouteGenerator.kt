@@ -18,6 +18,7 @@ class KtorRouteGenerator(
     private val basePackage: String,
     private val context: ContextSpec,
     private val outputDirectory: File,
+    private val optInKtorBinaryType: Boolean,
 ) {
 
     fun generate(installFunction: String, controllers: List<KtorController>) {
@@ -33,7 +34,8 @@ class KtorRouteGenerator(
                     addImport("io.ktor.server.auth", "authenticate")
                 }
             }
-            .addImport("io.ktor.server.response", "respond", "respondOutputStream", "header")
+            .addImport("io.ktor.server.response", "respond", "respondOutputStream", "header", "respondBytesWriter")
+            .addImport("io.ktor.utils.io", "copyTo")
             .addImport("io.ktor.http", "HttpStatusCode", "ContentType")
             .addImport(context.packageName, context.className)
             .addFunction(installFunction(installFunction, controllers))
@@ -81,7 +83,7 @@ class KtorRouteGenerator(
     }
 
     private fun CodeBlock.Builder.generateCall(controller: KtorController) {
-        val poet = PoetController(basePackage, controller)
+        val poet = PoetController(basePackage, controller, optInKtorBinaryType)
         addStatement("val context = ${context.className}.${context.factoryName}(call)")
         addStatement("val controller = with(locator) { getService(%T::class) }", poet.controllerClassName)
 
@@ -124,7 +126,10 @@ class KtorRouteGenerator(
         }
         when (controller.response.type) {
             ResponseType.Json -> generateJsonResponse(controller.response)
-            ResponseType.Binary -> generateBinaryResponse(controller.response)
+            ResponseType.Binary -> generateBinaryResponse(
+                response = controller.response,
+                optInKtorBinaryType = optInKtorBinaryType,
+            )
         }
     }
 }
@@ -158,21 +163,27 @@ private val HttpStatusCode.codeDescription: String
         .replace(" ", "")
         .replace("-", "")
 
-private fun CodeBlock.Builder.generateBinaryResponse(response: KtorController.Response) {
+private fun CodeBlock.Builder.generateBinaryResponse(response: KtorController.Response, optInKtorBinaryType: Boolean) {
     val contentType = response.contentTypeHeader?.let { raw ->
         wellKnownContentType[raw]?.let { wellKnown ->
             "(contentType = $wellKnown)"
         } ?: "(contentType = ContentType.parse(\"${response.contentTypeHeader}\"))"
     } ?: ""
+    val body = if (response.requiresSupportClass) {
+        "result.body"
+    } else {
+        "result"
+    }
 
-    controlFlow("call.respondOutputStream$contentType") {
-        val bodyFlow = if (response.requiresSupportClass) {
-            "result.body.use { incoming ->"
-        } else {
-            "result.use { incoming ->"
+    if (optInKtorBinaryType) {
+        controlFlow("call.respondBytesWriter$contentType") {
+            addStatement("$body.copyTo(this)")
         }
-        controlFlow(bodyFlow) {
-            addStatement("incoming.copyTo(this)")
+    } else {
+        controlFlow("call.respondOutputStream$contentType") {
+            controlFlow("$body.use { incoming ->") {
+                addStatement("incoming.copyTo(this)")
+            }
         }
     }
 }
