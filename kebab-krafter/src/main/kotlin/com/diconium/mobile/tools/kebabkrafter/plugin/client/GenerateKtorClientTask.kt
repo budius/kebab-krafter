@@ -48,6 +48,9 @@ abstract class GenerateKtorClientTask : DefaultTask() {
     @get:Input
     abstract val parcelable: Property<Boolean>
 
+    @get:Input
+    abstract val optInKtorBinaryType: Property<Boolean>
+
     @TaskAction
     fun action() {
         generateKtorClientFor(
@@ -58,6 +61,7 @@ abstract class GenerateKtorClientTask : DefaultTask() {
             baseDir = outputFolder.get().asFile,
             specFile = specFile.get(),
             transformers = transformerSpec.buildTransformers(),
+            optInKtorBinaryType = optInKtorBinaryType.get(),
         )
     }
 }

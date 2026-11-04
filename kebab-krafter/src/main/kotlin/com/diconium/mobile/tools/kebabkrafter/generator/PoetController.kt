@@ -6,12 +6,17 @@ import com.diconium.mobile.tools.kebabkrafter.models.UrlType
 import com.diconium.mobile.tools.kebabkrafter.requiresSupportClass
 import com.squareup.kotlinpoet.*
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import io.ktor.utils.io.ByteReadChannel
 import java.io.InputStream
 
 /**
  * Externalize simple class, package name concatenation and formation.
  */
-internal class PoetController(private val basePackage: String, private val controller: KtorController) {
+internal class PoetController(
+    private val basePackage: String,
+    private val controller: KtorController,
+    private val optInKtorBinaryType: Boolean = false,
+) {
 
     val controllerClassName = ClassName("$basePackage.${controller.packageName}", controller.className.toPascalCase())
     val requestClassName = controller.request.body?.let { requestBody ->
@@ -41,7 +46,11 @@ internal class PoetController(private val basePackage: String, private val contr
     } else {
         when (controller.response.type) {
             ResponseType.Json -> responseClassName
-            ResponseType.Binary -> InputStream::class.asTypeName()
+            ResponseType.Binary -> if (optInKtorBinaryType) {
+                ByteReadChannel::class.asTypeName()
+            } else {
+                InputStream::class.asTypeName()
+            }
         }
     }
 
@@ -51,7 +60,7 @@ internal class PoetController(private val basePackage: String, private val contr
             add(KModifier.DATA)
         }
 
-        val body = PoetController(basePackage, controller).responseClassName
+        val body = PoetController(basePackage, controller, optInKtorBinaryType).responseClassName
 
         primaryConstructor(
             FunSpec.constructorBuilder().apply {
@@ -66,11 +75,19 @@ internal class PoetController(private val basePackage: String, private val contr
 
                 if (controller.response.type == ResponseType.Binary) {
                     // input stream (if any)
-                    addParameter(
-                        ParameterSpec
-                            .builder("body", InputStream::class.asTypeName())
-                            .build(),
-                    )
+                    if (optInKtorBinaryType) {
+                        addParameter(
+                            ParameterSpec
+                                .builder("body", ByteReadChannel::class.asTypeName())
+                                .build(),
+                        )
+                    } else {
+                        addParameter(
+                            ParameterSpec
+                                .builder("body", InputStream::class.asTypeName())
+                                .build(),
+                        )
+                    }
                 } else if (body != null) {
                     // json body (if any)
                     addParameter(
@@ -92,11 +109,19 @@ internal class PoetController(private val basePackage: String, private val contr
 
         if (controller.response.type == ResponseType.Binary) {
             // input stream (if any)
-            addProperty(
-                PropertySpec.builder(name = "body", type = InputStream::class.asTypeName())
-                    .initializer("body")
-                    .build(),
-            )
+            if (optInKtorBinaryType) {
+                addProperty(
+                    PropertySpec.builder(name = "body", type =ByteReadChannel::class.asTypeName())
+                        .initializer("body")
+                        .build(),
+                )
+            } else {
+                addProperty(
+                    PropertySpec.builder(name = "body", type = InputStream::class.asTypeName())
+                        .initializer("body")
+                        .build(),
+                )
+            }
         } else if (body != null) {
             // json body (if any)
             addProperty(

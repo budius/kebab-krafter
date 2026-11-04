@@ -56,7 +56,7 @@ jobs:
             ./gradlew
             ktlintCheck
             :androidApp:assembleDebug
-            :desktopApp:compileKotlin
-# Uncomment those 2 check after fixing https://github.com/budius/kebab-krafter/issues/34
-#            :webApp:compileKotlinJs
-#            :webApp:compileKotlinWasmJs
+            :androidApp:testDebugUnitTest
+            :desktopApp:test
+            :webApp:jsBrowserTest
+            :webApp:wasmJsBrowserTest

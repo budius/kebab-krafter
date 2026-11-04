@@ -20,19 +20,15 @@ dependencies {
 
 	implementation(libs.androidx.activity.compose)
 
+    implementation(libs.bundles.ktor.client)
 	implementation(libs.kotlinx.serialization)
-	implementation(libs.ktor.client.core)
-	implementation(libs.ktor.client.okhttp)
-	implementation(libs.ktor.client.encoding)
-	implementation(libs.ktor.client.logging)
-	implementation(libs.ktor.client.content.negotiation)
-	implementation(libs.ktor.client.serialization.kotlinx.json)
 
 	implementation(libs.compose.uiToolingPreview)
 	debugImplementation(libs.compose.uiTooling)
 
 	testImplementation(libs.junit)
 	testImplementation(libs.kotlin.reflect)
+	testImplementation(libs.kotlin.test)
 }
 
 android {
@@ -77,5 +73,6 @@ ktorClient {
 		specFile = File(rootDir, "../sample-resources/petstore/swagger.yml")
 		schemasFolder = File(rootDir, "../sample-resources/petstore/models")
 		parcelable = true
-	}
+        optInKtorBinaryType = false
+    }
 }

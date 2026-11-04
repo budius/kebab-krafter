@@ -5,7 +5,7 @@ import com.diconium.mobile.tools.kebabkrafter.generator.toCamelCase
 import com.diconium.mobile.tools.kebabkrafter.generator.toPascalCase
 import com.diconium.mobile.tools.kebabkrafter.plugin.DefaultEndpointTransformer
 import com.diconium.mobile.tools.kebabkrafter.plugin.DefaultKtorTransformer
-import com.diconium.mobile.tools.kebabkrafter.plugin.registerTask
+import com.diconium.mobile.tools.kebabkrafter.plugin.registerServer
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 
@@ -31,7 +31,7 @@ fun applyGenerateKtorServer(target: Project) {
             val output = target.layout.buildDirectory.dir("generated/sources/ktorServer/serviceLocator/")
             task.outputFolder.convention(output)
         }
-        target.registerTask(registered)
+        target.registerServer(registered)
         registered
     }
 
@@ -60,6 +60,6 @@ fun applyGenerateKtorServer(target: Project) {
         baseTask.configure { it.dependsOn(task) }
 
         // wire task output to the main source set
-        target.registerTask(task)
+        target.registerServer(task)
     }
 }

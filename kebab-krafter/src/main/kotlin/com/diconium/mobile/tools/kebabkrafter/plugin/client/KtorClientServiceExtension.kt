@@ -64,6 +64,14 @@ abstract class KtorClientServiceExtension(@get:Input val name: String) {
     abstract val parcelable: Property<Boolean>
 
     /**
+     * Uses Ktor's ByteReadChannel instead of the JVM-only java.io.InputStream,
+     * allowing generated binary response APIs to support all Kotlin Multiplatform targets.
+     */
+    @get:Input
+    @get:Optional
+    abstract val optInKtorBinaryType: Property<Boolean>
+
+    /**
      * Specification for the custom transformations for the API
      */
     @KebabKrafterUnstableApi

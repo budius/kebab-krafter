@@ -33,7 +33,7 @@ private val SourceSet.kotlin: SourceDirectorySet
         as SourceDirectorySet
 
 //endregion
-internal fun Project.registerTask(task: Any) {
+internal fun Project.registerServer(task: Any) {
     pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
         extensions.configure<SourceSetContainer>("sourceSets") { container ->
             container.named("main").configure { sourceSet ->
@@ -42,20 +42,46 @@ internal fun Project.registerTask(task: Any) {
             }
         }
     }
+}
+
+internal fun Project.registerClientJvm(
+    task: TaskProvider<GenerateKtorClientTask>,
+    optInKtorBinaryType: Property<Boolean>,
+) {
+    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+        extensions.configure<SourceSetContainer>("sourceSets") { container ->
+            container.named("main").configure { sourceSet ->
+                sourceSet.java.srcDirs(task)
+                sourceSet.kotlin.srcDirs(task)
+            }
+        }
+        // KMP `desktopApp` and `server` can use whatever type
+        task.configure { it.optInKtorBinaryType.set(optInKtorBinaryType) }
+    }
+}
+
+internal fun Project.registerKmp(task: TaskProvider<GenerateKtorClientTask>) {
     pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
         extensions.configure<KotlinSourceSetContainer>("kotlin") { kotlin ->
             kotlin.sourceSets.named("commonMain").configure { it.kotlin.srcDir(task) }
         }
+        // Ktor Binary type is not optional for KMP `webApp`, `iosApp` amd `shared` modules
+        task.configure { it.optInKtorBinaryType.set(true) }
     }
 }
 
-internal fun Project.registerAndroid(task: TaskProvider<GenerateKtorClientTask>, parcelable: Property<Boolean>) {
+internal fun Project.registerAndroid(
+    task: TaskProvider<GenerateKtorClientTask>,
+    parcelable: Property<Boolean>,
+    optInKtorBinaryType: Property<Boolean>,
+) {
     fun SourceDirectories.Flat.registerVariant() {
         this.addGeneratedSourceDirectory(task, GenerateKtorClientTask::outputFolder)
     }
 
     fun register() {
         task.configure { it.parcelable.set(parcelable) }
+        task.configure { it.optInKtorBinaryType.set(optInKtorBinaryType) }
         extensions.getByType(AndroidComponentsExtension::class.java).onVariants { variant ->
             variant.sources.kotlin?.apply { registerVariant() }
                 ?: run { variant.sources.java?.registerVariant() }
