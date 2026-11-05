@@ -10,8 +10,11 @@ concurrency:
 
 jobs:
   checks:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
     name: Pull Request Checks
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -21,12 +24,9 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-          cache: 'gradle'
-          cache-dependency-path: |
-            **/*.gradle*
-            **/gradle.properties
-            **/gradle-wrapper.properties
-            **/gradle/libs.versions.toml
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
 
       - name: Build - Plugin
         working-directory: kebab-krafter
@@ -39,60 +39,6 @@ jobs:
         env:
           KEBAB_VERSION: 0.0.1-SNAPSHOT
         run: ./gradlew check
-
-      - name: Build - Android Sample
-        working-directory: sample-android
-        env:
-          KEBAB_VERSION: 0.0.1-SNAPSHOT
-        # sourceDebugJar was causing issues, so we add checks to the PR to avoid regressions
-        # see: https://github.com/budius/kebab-krafter/issues/30
-        run: ./gradlew assembleDebug testDebugUnitTest :kraftKebabAndroidLibary:sourceDebugJar
-
-      - name: Build - KMP Sample
-        working-directory: sample-kmp
-        env:
-          KEBAB_VERSION: 0.0.1-SNAPSHOT
-        run: >
-            ./gradlew
-            ktlintCheck
-            :androidApp:assembleDebug
-            :desktopApp:compileKotlin
-# Uncomment those 2 check after fixing https://github.com/budius/kebab-krafter/issues/34
-#            :webApp:compileKotlinJs
-#            :webApp:compileKotlinWasmJs
-
-  # because this library deals with file paths,
-  # it was identified the importance to run all the checks also in windows
-  checks-windows:
-    name: Windows Pull Request Checks
-    runs-on: windows-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Setup Java
-        uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: 21
-          cache: 'gradle'
-          cache-dependency-path: |
-            **/*.gradle*
-            **/gradle.properties
-            **/gradle-wrapper.properties
-            **/gradle/libs.versions.toml
-
-      - name: Build - Plugin
-        working-directory: kebab-krafter
-        env:
-          KEBAB_VERSION: 0.0.1-SNAPSHOT
-        run: gradle check
-
-      - name: Build - JVM Sample
-        working-directory: sample-jvm
-        env:
-          KEBAB_VERSION: 0.0.1-SNAPSHOT
-        run: gradle check
 
       - name: Build - Android Sample
         working-directory: sample-android
