@@ -54,7 +54,7 @@ internal fun Project.registerKmp(task: TaskProvider<GenerateKtorClientTask>) {
             kotlin.sourceSets.named("commonMain").configure { it.kotlin.srcDir(task) }
         }
         // Ktor Binary type is not optional for KMP `webApp`, `iosApp` amd `shared` modules
-        task.configure { it.optInKtorBinaryType.set(true) }
+        task.configure { it.useKtorBinaryType.set(true) }
     }
 }
 
@@ -69,7 +69,7 @@ internal fun Project.registerAndroid(
 
     fun register() {
         task.configure { it.parcelable.set(parcelable) }
-        task.configure { it.optInKtorBinaryType.set(optInKtorBinaryType) }
+        task.configure { it.useKtorBinaryType.set(optInKtorBinaryType) }
         extensions.getByType(AndroidComponentsExtension::class.java).onVariants { variant ->
             variant.sources.kotlin?.apply { registerVariant() }
                 ?: run { variant.sources.java?.registerVariant() }

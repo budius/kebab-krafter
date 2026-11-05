@@ -4,6 +4,7 @@ import com.diconium.mobile.tools.kebabkrafter.generator.ktorclient.generateKtorC
 import com.diconium.mobile.tools.kebabkrafter.named
 import com.diconium.mobile.tools.kebabkrafter.plugin.TransformerSpec
 import com.diconium.mobile.tools.kebabkrafter.plugin.buildTransformers
+import com.diconium.mobile.tools.kebabkrafter.warningKtorBinaryType
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
@@ -49,10 +50,13 @@ abstract class GenerateKtorClientTask : DefaultTask() {
     abstract val parcelable: Property<Boolean>
 
     @get:Input
-    abstract val optInKtorBinaryType: Property<Boolean>
+    abstract val useKtorBinaryType: Property<Boolean>
 
     @TaskAction
     fun action() {
+        if (useKtorBinaryType.get().not()) {
+            logger.warn(warningKtorBinaryType(clientName.get(), true))
+        }
         generateKtorClientFor(
             name = clientName.get(),
             log = logger.named(clientName.get()),
@@ -61,7 +65,7 @@ abstract class GenerateKtorClientTask : DefaultTask() {
             baseDir = outputFolder.get().asFile,
             specFile = specFile.get(),
             transformers = transformerSpec.buildTransformers(),
-            optInKtorBinaryType = optInKtorBinaryType.get(),
+            useKtorBinaryType = useKtorBinaryType.get(),
         )
     }
 }

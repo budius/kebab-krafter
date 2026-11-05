@@ -61,16 +61,6 @@ fun applyGenerateKtorServer(target: Project) {
         baseTask.configure { it.dependsOn(task) }
 
         // wire task output to the main source set
-        target.registerJvm(task) { optInKtorBinaryType.set(ktorServerInput.optInKtorBinaryType) }
-        target.afterEvaluate {
-            if (!ktorServerInput.optInKtorBinaryType.get()) {
-                target.logger.warn(
-                    "/!\\ Generate Server - " +
-                        "Ktor binary support is not enabled for `${ktorServerInput.name.toPascalCase()}`. " +
-                        "Generated clients will use the deprecated `InputStream` type, " +
-                        "which will be replaced by `ByteReadChannel` in version 3.0. Enable `optInKtorBinaryType` to migrate.",
-                )
-            }
-        }
+        target.registerJvm(task) { useKtorBinaryType.set(ktorServerInput.optInKtorBinaryType) }
     }
 }

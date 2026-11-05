@@ -14,7 +14,7 @@ internal fun generateKtorClientFor(
     baseDir: File,
     specFile: File,
     transformers: Transformers,
-    optInKtorBinaryType: Boolean,
+    useKtorBinaryType: Boolean,
 ) {
     val inputs1 = preParseGradleInputs(log, packageName, baseDir, specFile, transformers)
     val dataSpecs = inputs1.dataSpecs
@@ -30,7 +30,7 @@ internal fun generateKtorClientFor(
     ).generate()
 
     log.l("Generating ${controllers.size} KtorClient $name interfaces")
-    val generator = KtorClientGenerator(log, true, packageName, optInKtorBinaryType)
+    val generator = KtorClientGenerator(log, true, packageName, useKtorBinaryType)
     controllers.forEach { ctrl ->
         generator.generate(ctrl).writeTo(baseDir)
     }

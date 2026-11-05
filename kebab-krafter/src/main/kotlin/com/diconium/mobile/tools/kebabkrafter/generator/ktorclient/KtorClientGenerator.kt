@@ -13,7 +13,7 @@ internal class KtorClientGenerator(
     private val log: KebabLogger,
     private val safeExecution: Boolean,
     private val basePackage: String,
-    private val optInKtorBinaryType: Boolean,
+    private val useKtorBinaryType: Boolean,
 ) {
 
     init {
@@ -21,7 +21,7 @@ internal class KtorClientGenerator(
     }
 
     fun generate(controller: KtorController): FileSpec {
-        val poet = PoetController(basePackage, controller, optInKtorBinaryType)
+        val poet = PoetController(basePackage, controller, useKtorBinaryType)
 
         val interfaceSpec = with(poet) {
             TypeSpec

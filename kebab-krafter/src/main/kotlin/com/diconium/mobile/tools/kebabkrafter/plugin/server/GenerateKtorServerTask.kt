@@ -4,6 +4,7 @@ import com.diconium.mobile.tools.kebabkrafter.generator.ktorserver.ContextSpec
 import com.diconium.mobile.tools.kebabkrafter.generator.ktorserver.generateKtorServerFor
 import com.diconium.mobile.tools.kebabkrafter.named
 import com.diconium.mobile.tools.kebabkrafter.plugin.buildTransformers
+import com.diconium.mobile.tools.kebabkrafter.warningKtorBinaryType
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
@@ -19,7 +20,7 @@ abstract class GenerateKtorServerTask : DefaultTask() {
     abstract val log: Property<Boolean>
 
     @get:Input
-    abstract val optInKtorBinaryType: Property<Boolean>
+    abstract val useKtorBinaryType: Property<Boolean>
 
     @get:Nested
     abstract val ktorServerInput: Property<KtorServerServiceExtension>
@@ -27,6 +28,9 @@ abstract class GenerateKtorServerTask : DefaultTask() {
     @TaskAction
     fun action() {
         with(ktorServerInput.get()) {
+            if (useKtorBinaryType.get().not()) {
+                logger.warn(warningKtorBinaryType(name, false))
+            }
             generateKtorServerFor(
                 log = logger.named(name),
                 packageName = packageName.get(),
@@ -41,7 +45,7 @@ abstract class GenerateKtorServerTask : DefaultTask() {
                     )
                 },
                 transformers = transformerSpec.buildTransformers(),
-                optInKtorBinaryType = optInKtorBinaryType.get(),
+                useKtorBinaryType = useKtorBinaryType.get(),
             )
         }
     }

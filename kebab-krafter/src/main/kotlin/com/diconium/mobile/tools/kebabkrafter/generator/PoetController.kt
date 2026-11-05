@@ -15,7 +15,7 @@ import java.io.InputStream
 internal class PoetController(
     private val basePackage: String,
     private val controller: KtorController,
-    private val optInKtorBinaryType: Boolean,
+    private val useKtorBinaryType: Boolean,
 ) {
 
     val controllerClassName = ClassName("$basePackage.${controller.packageName}", controller.className.toPascalCase())
@@ -46,7 +46,7 @@ internal class PoetController(
     } else {
         when (controller.response.type) {
             ResponseType.Json -> responseClassName
-            ResponseType.Binary -> if (optInKtorBinaryType) {
+            ResponseType.Binary -> if (useKtorBinaryType) {
                 ByteReadChannel::class.asTypeName()
             } else {
                 InputStream::class.asTypeName()
@@ -60,7 +60,7 @@ internal class PoetController(
             add(KModifier.DATA)
         }
 
-        val body = PoetController(basePackage, controller, optInKtorBinaryType).responseClassName
+        val body = PoetController(basePackage, controller, useKtorBinaryType).responseClassName
 
         primaryConstructor(
             FunSpec.constructorBuilder().apply {
@@ -75,7 +75,7 @@ internal class PoetController(
 
                 if (controller.response.type == ResponseType.Binary) {
                     // input stream (if any)
-                    if (optInKtorBinaryType) {
+                    if (useKtorBinaryType) {
                         addParameter(
                             ParameterSpec
                                 .builder("body", ByteReadChannel::class.asTypeName())
@@ -109,7 +109,7 @@ internal class PoetController(
 
         if (controller.response.type == ResponseType.Binary) {
             // input stream (if any)
-            if (optInKtorBinaryType) {
+            if (useKtorBinaryType) {
                 addProperty(
                     PropertySpec.builder(name = "body", type = ByteReadChannel::class.asTypeName())
                         .initializer("body")

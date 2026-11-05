@@ -45,7 +45,7 @@ fun applyGenerateKtorClient(target: Project) {
             it.schemasFolder.set(ktorClientInput.schemasFolder)
             it.outputFolder.set(ktorClientInput.outputFolder)
             it.parcelable.set(false)
-            it.optInKtorBinaryType.set(false)
+            it.useKtorBinaryType.set(false)
             it.transformerSpec.endpointTransformer.set(ktorClientInput.transformerSpec.endpointTransformer)
             it.transformerSpec.ktorMapper.set(ktorClientInput.transformerSpec.ktorMapper)
             it.transformerSpec.ktorTransformer.set(ktorClientInput.transformerSpec.ktorTransformer)
@@ -55,24 +55,6 @@ fun applyGenerateKtorClient(target: Project) {
         // wire task output to the main source set
         target.registerAndroid(task, ktorClientInput.parcelable, ktorClientInput.optInKtorBinaryType)
         target.registerKmp(task)
-        target.registerJvm(task) { optInKtorBinaryType.set(ktorClientInput.optInKtorBinaryType) }
-        target.afterEvaluate {
-            val supportsOptionalBinaryType =
-                !target.pluginManager.hasPlugin("org.jetbrains.kotlin.multiplatform") &&
-                    (
-                        target.pluginManager.hasPlugin("org.jetbrains.kotlin.jvm") ||
-                            target.pluginManager.hasPlugin("com.android.application") ||
-                            target.pluginManager.hasPlugin("com.android.library")
-                        )
-
-            if (supportsOptionalBinaryType && !ktorClientInput.optInKtorBinaryType.get()) {
-                target.logger.warn(
-                    "/!\\ Generate Client - " +
-                        "Ktor binary support is not enabled for `${ktorClientInput.name.toPascalCase()}`. " +
-                        "Generated clients will use the deprecated `InputStream` type, " +
-                        "which will be replaced by `ByteReadChannel` in version 3.0. Enable `optInKtorBinaryType` to migrate.",
-                )
-            }
-        }
+        target.registerJvm(task) { useKtorBinaryType.set(ktorClientInput.optInKtorBinaryType) }
     }
 }

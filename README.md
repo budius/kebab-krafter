@@ -13,7 +13,7 @@
 Available for:
     <br> - Ktor Server
     <br> - Ktor Client (JVM and Android)
-    <br> - Kotlin Multiplatform (in analyze)
+    <br> - Kotlin Multiplatform
     <br> - Swift client (hopefully)
 </p>
 
@@ -69,6 +69,9 @@ ktorServer {
 			className = "CallScope"
 			factoryName = "from"
 		}
+		
+		// Enables using Ktor's ByteReadChannel
+		optInKtorBinaryType = true
 	}
 }
 ```
@@ -124,6 +127,12 @@ class KoinServiceLocator(private val koin: Koin) : ServiceLocator {
 }
 ```
 
+#### Binary responses
+
+Set `optInKtorBinaryType = true` to use Ktor's `ByteReadChannel` instead of the deprecated JVM-only
+`InputStream`. Please enable this flag to migrate now. `ByteReadChannel` supports Kotlin 
+Multiplatform and will become the default in version 3.0.
+
 ### Further Examples
 
 Check the `sample-jvm` apps with the "Pet Store" for a full example.
@@ -138,6 +147,8 @@ ktorClient {
 		packageName = "root.package.name.for.the.generated.code"
 		specFile = File(rootDir, "swagger/api.yml")
 		schemasFolder = File(rootDir, "swagger/models/")
+		// Enables using Ktor's ByteReadChannel
+		optInKtorBinaryType = true
 	}
 }
 ```

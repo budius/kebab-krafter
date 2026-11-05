@@ -16,11 +16,11 @@ Name certain files which require more attention.
 
 ### Does this change require updates outside of the code, like updating the documentation, configuration? If so, was this done?
 
-If code changes in this PR require documentation changes or relate to configuration updates, add your desciption.
+If code changes in this PR require documentation changes or relate to configuration updates, add your description.
 
 ### Testing Steps
 
-How to test changes? Please give a desciption.
+How to test changes? Please give a description.
 
 ## Checklist:
 

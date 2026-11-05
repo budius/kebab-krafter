@@ -18,7 +18,7 @@ class KtorRouteGenerator(
     private val basePackage: String,
     private val context: ContextSpec,
     private val outputDirectory: File,
-    private val optInKtorBinaryType: Boolean,
+    private val useKtorBinaryType: Boolean,
 ) {
 
     fun generate(installFunction: String, controllers: List<KtorController>) {
@@ -83,7 +83,7 @@ class KtorRouteGenerator(
     }
 
     private fun CodeBlock.Builder.generateCall(controller: KtorController) {
-        val poet = PoetController(basePackage, controller, optInKtorBinaryType)
+        val poet = PoetController(basePackage, controller, useKtorBinaryType)
         addStatement("val context = ${context.className}.${context.factoryName}(call)")
         addStatement("val controller = with(locator) { getService(%T::class) }", poet.controllerClassName)
 
@@ -128,7 +128,7 @@ class KtorRouteGenerator(
             ResponseType.Json -> generateJsonResponse(controller.response)
             ResponseType.Binary -> generateBinaryResponse(
                 response = controller.response,
-                optInKtorBinaryType = optInKtorBinaryType,
+                useKtorBinaryType = useKtorBinaryType,
             )
         }
     }
@@ -163,7 +163,7 @@ private val HttpStatusCode.codeDescription: String
         .replace(" ", "")
         .replace("-", "")
 
-private fun CodeBlock.Builder.generateBinaryResponse(response: KtorController.Response, optInKtorBinaryType: Boolean) {
+private fun CodeBlock.Builder.generateBinaryResponse(response: KtorController.Response, useKtorBinaryType: Boolean) {
     val contentType = response.contentTypeHeader?.let { raw ->
         wellKnownContentType[raw]?.let { wellKnown ->
             "(contentType = $wellKnown)"
@@ -175,7 +175,7 @@ private fun CodeBlock.Builder.generateBinaryResponse(response: KtorController.Re
         "result"
     }
 
-    if (optInKtorBinaryType) {
+    if (useKtorBinaryType) {
         controlFlow("call.respondBytesWriter$contentType") {
             addStatement("$body.copyTo(this)")
         }
