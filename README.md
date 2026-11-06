@@ -184,3 +184,4 @@ After gradle import/index the source code from the plugin will be linked and dis
 ## Authors <a name = "authors"></a>
 
 - [@budius](https://github.com/budius)
+- [Marie-Anne Sinfreu](https://github.com/Marie-Anne-Diconium)
