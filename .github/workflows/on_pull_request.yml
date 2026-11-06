@@ -8,6 +8,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  KEBAB_VERSION: 0.0.1-SNAPSHOT
+
 jobs:
   checks:
     strategy:
@@ -30,20 +33,14 @@ jobs:
 
       - name: Build - Plugin
         working-directory: kebab-krafter
-        env:
-          KEBAB_VERSION: 0.0.1-SNAPSHOT
         run: ./gradlew check
 
       - name: Build - JVM Sample
         working-directory: sample
-        env:
-          KEBAB_VERSION: 0.0.1-SNAPSHOT
         run: ./gradlew check
 
       - name: Build - Android Sample
         working-directory: android
-        env:
-          KEBAB_VERSION: 0.0.1-SNAPSHOT
         # sourceDebugJar was causing issues, so we add checks to the PR to avoid regressions
         # see: https://github.com/budius/kebab-krafter/issues/30
         run: ./gradlew assembleDebug testDebugUnitTest :kraftKebabAndroidLibary:sourceDebugJar
