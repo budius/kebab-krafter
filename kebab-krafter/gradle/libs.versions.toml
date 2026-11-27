@@ -61,6 +61,7 @@ agp_version = "9.4.0"
 
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin_version" }
 kotlin-poet = { module = "com.squareup:kotlinpoet", version.ref = "kotlin_poet" }
+kotlin-gradle-plugin-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin_version" }
 data-json = { module = "org.json:json", version.ref = "json_org_version" }
 data-yaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml_version" }
 swagger-parser = { module = "io.swagger.parser.v3:swagger-parser", version.ref = "swagger_parser_version" }

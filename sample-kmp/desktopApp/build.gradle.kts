@@ -1,0 +1,29 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+
+plugins {
+	alias(libs.plugins.kotlinJvm)
+	alias(libs.plugins.composeMultiplatform)
+	alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.ktlint)
+}
+
+dependencies {
+	implementation(project(":shared"))
+
+	implementation(compose.desktop.currentOs)
+	implementation(libs.kotlinx.coroutinesSwing)
+
+	implementation(libs.compose.uiToolingPreview)
+}
+
+compose.desktop {
+	application {
+		mainClass = "io.github.budius.kebabkrafterkmp.MainKt"
+
+		nativeDistributions {
+			targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+			packageName = "io.github.budius.kebabkrafterkmp"
+			packageVersion = "1.0.0"
+		}
+	}
+}
