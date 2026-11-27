@@ -1,0 +1,7 @@
+TEAM_ID=
+
+PRODUCT_NAME=Kebab Krafter Kmp
+PRODUCT_BUNDLE_IDENTIFIER=io.github.budius.kebabkrafterkmp.KebabKrafterKmp$(TEAM_ID)
+
+CURRENT_PROJECT_VERSION=1
+MARKETING_VERSION=1.0
