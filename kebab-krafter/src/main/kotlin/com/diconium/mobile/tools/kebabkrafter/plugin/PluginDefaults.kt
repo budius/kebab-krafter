@@ -14,6 +14,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetContainer
 
 //region default transformers
 internal class DefaultEndpointTransformer : EndpointTransformer {
@@ -39,6 +40,11 @@ internal fun Project.registerTask(task: Any) {
                 sourceSet.java.srcDirs(task)
                 sourceSet.kotlin.srcDirs(task)
             }
+        }
+    }
+    pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+        extensions.configure<KotlinSourceSetContainer>("kotlin") { kotlin ->
+            kotlin.sourceSets.named("commonMain").configure { it.kotlin.srcDir(task) }
         }
     }
 }
